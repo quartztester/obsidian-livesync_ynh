@@ -38,6 +38,11 @@ systemctl enable couchdb --quiet
 ynh_systemctl --service=couchdb --action=restart \
 	--wait_until="Apache CouchDB has started" --log_path="$log_path" --timeout=120
 
+# CouchDB rewrites its hashed admin credential into the highest-loaded
+# local.d ini at first start — re-store the checksum so the managed-file
+# comparison doesn't flag the file as hand-edited later on.
+ynh_store_file_checksum "/opt/couchdb/etc/local.d/$app.ini"
+
 #=================================================
 # RESTORE THE SYSTEM CONFIGURATION
 #=================================================
@@ -50,7 +55,7 @@ ynh_restore "/etc/logrotate.d/$app"
 ynh_systemctl --service=fail2ban --action=restart
 
 yunohost service add couchdb --description="Sync server for the Obsidian LiveSync plugin" \
-	--log="/var/log/$app/couchdb.log" --needs_exposed_ports "$port"
+	--log="/var/log/$app/couchdb.log"
 
 ynh_systemctl --service=nginx --action=reload
 

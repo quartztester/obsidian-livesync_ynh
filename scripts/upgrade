@@ -36,6 +36,11 @@ fix_couchdb_ownership
 ynh_systemctl --service=couchdb --action=restart \
 	--wait_until="Apache CouchDB has started" --log_path="$log_path" --timeout=120
 
+# CouchDB rewrites its hashed admin credential into the highest-loaded
+# local.d ini at first start — re-store the checksum so the managed-file
+# comparison doesn't flag the file as hand-edited later on.
+ynh_store_file_checksum "/opt/couchdb/etc/local.d/$app.ini"
+
 # The password question may have been changed at upgrade time; the ini-
 # declared admin only updates through the API.
 curl --fail --silent --retry 5 --retry-connrefused \

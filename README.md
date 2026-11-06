@@ -4,13 +4,19 @@ It shall NOT be edited by hand.
 -->
 
 <h1>
-  <img src="logos/obsidian-livesync.png" width="32px" alt="Logo of Obsidian LiveSync">
+  <img src="https://raw.githubusercontent.com/YunoHost/apps/main/logos/obsidian-livesync.png" width="32px" alt="Logo of Obsidian LiveSync">
   Obsidian LiveSync, packaged for YunoHost
 </h1>
 
 Self-hosted sync server for the Obsidian LiveSync plugin
 
-[![Version: 3.3.3~ynh1](https://img.shields.io/badge/Version-3.3.3~ynh1-green?style=for-the-badge)]()
+[![Version: 3.3.3~ynh1](https://img.shields.io/badge/Version-3.3.3~ynh1-rgb(18,138,11)?style=for-the-badge)](https://ci-apps.yunohost.org/ci/apps/obsidian-livesync/)
+
+<div align="center">
+<a href="https://apps.yunohost.org/app/obsidian-livesync"><img height="100px" src="https://github.com/YunoHost/yunohost-artwork/raw/refs/heads/main/badges/neopossum-badges/badge_more_info_on_the_appstore.svg"/></a>
+<a href="https://github.com/YunoHost-Apps/obsidian-livesync_ynh/issues"><img height="100px" src="https://github.com/YunoHost/yunohost-artwork/raw/refs/heads/main/badges/neopossum-badges/badge_report_an_issue.svg"/></a>
+</div>
+
 
 ## Screenshots
 ![Screenshot of Obsidian LiveSync](./doc/screenshots/connection-details.png)
@@ -18,7 +24,25 @@ Self-hosted sync server for the Obsidian LiveSync plugin
 
 ## 📦 Developer info
 
+[![Automatic tests level](https://apps.yunohost.org/badge/cilevel/obsidian-livesync)](https://ci-apps.yunohost.org/ci/apps/obsidian-livesync/)
+
 🛠️ Upstream Obsidian LiveSync repository: <https://github.com/vrtmrz/obsidian-livesync>
+
+Pull request are welcome and should target the [`testing` branch](https://github.com/YunoHost-Apps/obsidian-livesync_ynh/tree/testing).
+
+The `testing` branch can be tested using:
+```
+# fresh install:
+sudo yunohost app install https://github.com/YunoHost-Apps/obsidian-livesync_ynh/tree/testing
+
+# upgrade an existing install:
+sudo yunohost app upgrade obsidian-livesync -u https://github.com/YunoHost-Apps/obsidian-livesync_ynh/tree/testing
+```
+
+You can also switch to the testing branch to update from testing by default (as same as for APT when you chose to use a testing repos) with this command:
+```bash
+sudo yunohost app setting obsidian-livesync upgrade_channel -v testing
+```
 
 ### 📚 App packaging documentation
 
