@@ -1,0 +1,3 @@
+LiveSync est un plug-in de synchronisation pour Obsidian, une application de prise de notes stockées localement. Ce paquet installe le serveur dont il a besoin : une instance Apache CouchDB configurée pour le protocole de réplication du plug-in (CORS, authentification Basic, grosses pièces jointes), avec la base de synchronisation `obsidiannotes` prête à l'emploi.
+
+Les appareils Obsidian se connectent à l'URL de synchronisation (`https://domaine.tld/chemin`) avec les identifiants administrateur CouchDB choisis à l'installation, ou tout utilisateur CouchDB supplémentaire créé par l'administrateur. Les données sont chiffrées de bout en bout par le plug-in.

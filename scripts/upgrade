@@ -1,0 +1,67 @@
+#!/bin/bash
+
+#=================================================
+# IMPORT GENERIC HELPERS
+#=================================================
+
+source _common.sh
+source /usr/share/yunohost/helpers
+
+#=================================================
+# UPGRADE DEPENDENCIES
+#=================================================
+ynh_script_progression "Upgrading CouchDB..."
+
+seed_couchdb_debconf
+ynh_apt_install_dependencies_from_extra_repository \
+	--repo="$COUCHDB_REPO" \
+	--key="$COUCHDB_KEY" \
+	--package="couchdb"
+
+#=================================================
+# UPDATE CONFIGURATION
+#=================================================
+ynh_script_progression "Updating configuration..."
+
+ynh_config_add --template="couch.ini" \
+	--destination="/opt/couchdb/etc/local.d/$app.ini"
+
+#=================================================
+# RESTART THE SERVICE
+#=================================================
+ynh_script_progression "Restarting CouchDB..."
+
+fix_couchdb_ownership
+
+ynh_systemctl --service=couchdb --action=restart \
+	--wait_until="Apache CouchDB has started" --log_path="$log_path" --timeout=120
+
+# The password question may have been changed at upgrade time; the ini-
+# declared admin only updates through the API.
+curl --fail --silent --retry 5 --retry-connrefused \
+	-X PUT "http://127.0.0.1:$port/_node/_local/_config/admins/admin" \
+	--data "\"$password\"" >/dev/null || true
+
+create_sync_db
+
+#=================================================
+# SYSTEM INTEGRATION
+#=================================================
+ynh_script_progression "Upgrading NGINX, log rotation, fail2ban and log integration..."
+
+ynh_config_add_nginx
+
+ynh_config_add_logrotate
+
+# Register the deb's real unit name (service status in the webadmin keys on it).
+yunohost service add couchdb --description="Sync server for the Obsidian LiveSync plugin" \
+	--log="/var/log/$app/couchdb.log" --needs_exposed_ports "$port"
+
+ynh_config_add_fail2ban --logpath="/var/log/$app/couchdb.log" \
+	--failregex="\[warning\].*Authentication failed for user .+ from <HOST>"
+
+#=================================================
+# END OF SCRIPT
+#=================================================
+
+ynh_script_progression "Upgrade of $app completed"

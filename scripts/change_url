@@ -1,0 +1,23 @@
+#!/bin/bash
+
+#=================================================
+# IMPORT GENERIC HELPERS
+#=================================================
+
+source _common.sh
+source /usr/share/yunohost/helpers
+
+#=================================================
+# CHANGE URL
+#=================================================
+# Only the NGINX location changes; CouchDB itself is path-agnostic behind
+# the sub_path proxy.
+
+ynh_script_progression "Updating NGINX web server configuration..."
+ynh_config_change_url_nginx
+
+#=================================================
+# END OF SCRIPT
+#=================================================
+
+ynh_script_progression "Change of URL completed for $app"

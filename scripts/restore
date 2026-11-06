@@ -1,0 +1,60 @@
+#!/bin/bash
+
+#=================================================
+# IMPORT GENERIC HELPERS
+#=================================================
+
+# Keep this path for calling _common.sh inside the execution's context of backup and restore scripts
+source ../settings/scripts/_common.sh
+source /usr/share/yunohost/helpers
+
+#=================================================
+# RESTORE THE APP MAIN DIR AND DATA
+#=================================================
+ynh_script_progression "Restoring the app main directory and data..."
+
+ynh_restore "$install_dir"
+ynh_restore "$data_dir"
+fix_couchdb_ownership
+
+#=================================================
+# REINSTALL COUCHDB
+#=================================================
+ynh_script_progression "Reinstalling CouchDB..."
+
+seed_couchdb_debconf
+ynh_apt_install_dependencies_from_extra_repository \
+	--repo="$COUCHDB_REPO" \
+	--key="$COUCHDB_KEY" \
+	--package="couchdb"
+
+# The deb's postinst ships its own local.d/10-admins.ini; ours must win
+# if the two disagree about the admin user.
+ynh_config_add --template="couch.ini" \
+	--destination="/opt/couchdb/etc/local.d/$app.ini"
+fix_couchdb_ownership
+
+ynh_systemctl --service=couchdb --action=restart \
+	--wait_until="Apache CouchDB has started" --log_path="$log_path" --timeout=120
+
+#=================================================
+# RESTORE THE SYSTEM CONFIGURATION
+#=================================================
+ynh_script_progression "Restoring the system configuration..."
+
+ynh_restore "/etc/nginx/conf.d/$domain.d/$app.conf"
+ynh_restore "/etc/fail2ban/jail.d/$app.conf"
+ynh_restore "/etc/fail2ban/filter.d/$app.conf"
+ynh_restore "/etc/logrotate.d/$app"
+ynh_systemctl --service=fail2ban --action=restart
+
+yunohost service add couchdb --description="Sync server for the Obsidian LiveSync plugin" \
+	--log="/var/log/$app/couchdb.log" --needs_exposed_ports "$port"
+
+ynh_systemctl --service=nginx --action=reload
+
+#=================================================
+# END OF SCRIPT
+#=================================================
+
+ynh_script_progression "Restoration completed for $app"

@@ -1,0 +1,34 @@
+#!/bin/bash
+
+#=================================================
+# IMPORT GENERIC HELPERS
+#=================================================
+
+source _common.sh
+source /usr/share/yunohost/helpers
+
+#=================================================
+# REMOVE SERVICE INTEGRATION IN YUNOHOST
+#=================================================
+ynh_script_progression "Removing system configurations related to $app..."
+
+if ynh_hide_warnings yunohost service status couchdb >/dev/null; then
+	yunohost service remove couchdb
+fi
+
+# The deb package itself is kept (couchdb_ynh may own it); only our
+# managed config goes away with $install_dir.
+ynh_safe_rm "/opt/couchdb/etc/local.d/$app.ini"
+
+ynh_config_remove_fail2ban
+ynh_config_remove_logrotate
+ynh_config_remove_nginx
+
+# Remove the sync databases we created unless another app still uses them.
+ynh_script_progression "Removing $app's systemd service is not needed (shared couchdb unit kept)..."
+
+#=================================================
+# END OF SCRIPT
+#=================================================
+
+ynh_script_progression "Removal of $app completed"

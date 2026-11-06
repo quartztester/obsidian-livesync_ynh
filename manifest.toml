@@ -1,0 +1,66 @@
+#:schema https://raw.githubusercontent.com/YunoHost/apps/main/schemas/manifest.v2.schema.json
+
+packaging_format = 2
+
+id = "obsidian-livesync"
+name = "Obsidian LiveSync"
+description.en = "Self-hosted sync server for the Obsidian LiveSync plugin"
+description.fr = "Serveur de synchronisation pour l'extension Obsidian LiveSync"
+
+version = "3.3.3~ynh1"
+
+maintainers = []
+
+[upstream]
+license = "MIT"
+admindoc = "https://github.com/vrtmrz/obsidian-livesync/blob/main/docs/setup_own_server.md"
+code = "https://github.com/vrtmrz/obsidian-livesync"
+
+[integration]
+yunohost = ">= 12.1.39"
+helpers_version = "2.1"
+architectures = ["amd64", "arm64"]
+# The CouchDB deb installs one system-wide service bound to a single data
+# directory; a second instance would share (and clobber) that global state.
+multi_instance = false
+
+ldap = "not_relevant"
+sso = "not_relevant"
+
+disk = "100M"
+ram.build = "200M"
+ram.runtime = "150M"
+
+[install]
+    [install.domain]
+    type = "domain"
+
+    [install.path]
+    type = "path"
+    default = "/obsidian-livesync"
+
+    [install.init_main_permission]
+    type = "group"
+    default = "visitors"
+
+    [install.password]
+    type = "password"
+    help.en = "CouchDB administrator password, used by Obsidian devices to authenticate against the sync server."
+    help.fr = "Mot de passe administrateur CouchDB, utilisé par les appareils Obsidian pour s'authentifier auprès du serveur de synchronisation."
+
+[resources]
+    [resources.system_user]
+
+    [resources.install_dir]
+    dir = "/opt/couchdb"
+
+    [resources.data_dir]
+
+    [resources.permissions]
+    main.url = "/"
+
+    [resources.ports]
+    main.default = 5984
+
+    [resources.apt]
+    packages = ["gnupg", "ca-certificates"]

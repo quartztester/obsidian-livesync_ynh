@@ -1,0 +1,12 @@
+#:schema https://raw.githubusercontent.com/YunoHost/apps/main/schemas/tests.v1.schema.json
+
+test_format = 1.0
+
+[default]
+
+    # CouchDB's root answers 401 with require_valid_user (correct behaviour
+    # for the plugin's Basic-auth replication protocol).
+    [default.curl_tests]
+    home.path = "/"
+    home.expect_return_code = [200, 401]
+    home.auto_test_assets = false

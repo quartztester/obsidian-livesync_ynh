@@ -1,0 +1,3 @@
+Self-hosted LiveSync is a synchronisation plug-in for Obsidian, an application to take notes and keep them locally. This package installs the server side it needs: an Apache CouchDB instance configured for the plugin's replication protocol (CORS, Basic auth, large attachment support), with the default `obsidiannotes` sync database ready to use.
+
+Obsidian devices connect to the synchronisation URL (`https://domain.tld/path`) using the CouchDB administrator credentials chosen at install, or any additional CouchDB user an admin creates. Vault data is stored on the server encrypted end-to-end by the plugin.
