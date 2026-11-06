@@ -11,7 +11,7 @@ log_path="/var/log/$app/couchdb.log"
 # Debconf preseed so the CouchDB deb installs non-interactively: standalone
 # node, localhost-bound.
 seed_couchdb_debconf() {
-	echo "
+	debconf-set-selections <<EOF
 couchdb couchdb/mode select standalone
 couchdb couchdb/mode seen true
 couchdb couchdb/bindaddress string 127.0.0.1
@@ -20,7 +20,8 @@ couchdb couchdb/cookie string $password
 couchdb couchdb/adminpass password $password
 couchdb couchdb/adminpass seen true
 couchdb couchdb/adminpass_again password $password
-couchdb couchdb/adminpass_again seen true" | debconf-set-selections
+couchdb couchdb/adminpass_again seen true
+EOF
 }
 
 # Run the deb's couchdb unit as $app (matches YunoHost's ownership of
