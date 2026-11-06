@@ -23,12 +23,16 @@ couchdb couchdb/adminpass_again password $password
 couchdb couchdb/adminpass_again seen true" | debconf-set-selections
 }
 
-# The deb's unit runs as the system 'couchdb' user, so the data and log
-# dirs written through our ini must belong to it, not to $app.
+# Run the deb's couchdb unit as $app (matches YunoHost's ownership of
+# $install_dir/$data_dir; the deb default user 'couchdb' cannot even exec
+# the binary once the install_dir resource owns /opt/couchdb).
 fix_couchdb_ownership() {
-	mkdir -p /var/log/$app "$data_dir"
-	chown -R couchdb:couchdb /var/log/$app "$data_dir"
-	chmod 750 /var/log/$app "$data_dir"
+	mkdir -p "/var/log/$app" "$data_dir" "/etc/systemd/system/couchdb.service.d"
+	chown -R "$app:$app" "/var/log/$app" "$data_dir" "$install_dir"
+	chmod 750 "/var/log/$app" "$data_dir"
+	ynh_config_add --template="systemd_service_dropin.conf" \
+		--destination="/etc/systemd/system/couchdb.service.d/$app.conf"
+	systemctl daemon-reload
 }
 
 # 412 = the database already exists (reinstall/upgrade), which is fine.

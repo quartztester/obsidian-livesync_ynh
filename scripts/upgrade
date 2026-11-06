@@ -53,9 +53,9 @@ ynh_config_add_nginx
 
 ynh_config_add_logrotate
 
-# Register the deb's real unit name (service status in the webadmin keys on it).
+# Register the deb's real unit name (see install for rationale).
 yunohost service add couchdb --description="Sync server for the Obsidian LiveSync plugin" \
-	--log="/var/log/$app/couchdb.log" --needs_exposed_ports "$port"
+	--log="/var/log/$app/couchdb.log"
 
 ynh_config_add_fail2ban --logpath="/var/log/$app/couchdb.log" \
 	--failregex="\[warning\].*Authentication failed for user .+ from <HOST>"

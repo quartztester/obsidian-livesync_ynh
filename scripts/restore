@@ -33,6 +33,7 @@ ynh_apt_install_dependencies_from_extra_repository \
 ynh_config_add --template="couch.ini" \
 	--destination="/opt/couchdb/etc/local.d/$app.ini"
 fix_couchdb_ownership
+systemctl enable couchdb --quiet
 
 ynh_systemctl --service=couchdb --action=restart \
 	--wait_until="Apache CouchDB has started" --log_path="$log_path" --timeout=120

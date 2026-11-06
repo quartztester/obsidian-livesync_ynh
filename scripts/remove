@@ -16,9 +16,10 @@ if ynh_hide_warnings yunohost service status couchdb >/dev/null; then
 	yunohost service remove couchdb
 fi
 
-# The deb package itself is kept (couchdb_ynh may own it); only our
-# managed config goes away with $install_dir.
+# The deb package itself goes away with $app-ynh-deps; drop our unit drop-in.
+ynh_safe_rm "/etc/systemd/system/couchdb.service.d/$app.conf"
 ynh_safe_rm "/opt/couchdb/etc/local.d/$app.ini"
+systemctl daemon-reload
 
 ynh_config_remove_fail2ban
 ynh_config_remove_logrotate
